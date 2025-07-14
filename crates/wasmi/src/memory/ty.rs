@@ -1,7 +1,5 @@
 use crate::core::{
-    IndexType,
-    MemoryError,
-    MemoryType as CoreMemoryType,
+    IndexType, MemoryError, MemoryType as CoreMemoryType,
     MemoryTypeBuilder as CoreMemoryTypeBuilder,
 };
 

@@ -9,9 +9,7 @@
 use super::FuncIdx;
 use crate::{
     core::{wasm, UntypedVal, F32, F64},
-    ExternRef,
-    FuncRef,
-    Val,
+    ExternRef, FuncRef, Val,
 };
 use alloc::boxed::Box;
 use core::fmt;
@@ -75,7 +73,7 @@ pub enum Op {
 #[derive(Debug)]
 pub struct ConstOp {
     /// The underlying precomputed untyped value.
-    value: UntypedVal,
+    pub(crate) value: UntypedVal,
 }
 
 impl Eval for ConstOp {
@@ -89,7 +87,7 @@ impl Eval for ConstOp {
 #[derive(Debug)]
 pub struct GlobalOp {
     /// The index of the global variable.
-    global_index: u32,
+    pub(crate) global_index: u32,
 }
 
 impl Eval for GlobalOp {
@@ -103,7 +101,7 @@ impl Eval for GlobalOp {
 #[derive(Debug)]
 pub struct FuncRefOp {
     /// The index of the function.
-    function_index: u32,
+    pub(crate) function_index: u32,
 }
 
 impl Eval for FuncRefOp {
@@ -191,7 +189,7 @@ impl Eval for Op {
 #[derive(Debug)]
 pub struct ConstExpr {
     /// The root operator of the [`ConstExpr`].
-    op: Op,
+    pub(crate) op: Op,
 }
 
 impl Eval for ConstExpr {

@@ -93,7 +93,9 @@ mod foreach_tuple;
 #[cfg(test)]
 pub mod tests;
 
-mod engine;
+pub mod serialization;
+
+pub(crate) mod engine;
 mod error;
 mod externref;
 mod func;
@@ -102,7 +104,7 @@ mod instance;
 mod limits;
 mod linker;
 mod memory;
-mod module;
+pub(crate) mod module;
 mod store;
 mod table;
 mod value;
@@ -135,33 +137,15 @@ pub mod errors {
 pub use self::{
     core::{GlobalType, Mutability},
     engine::{
-        CompilationMode,
-        Config,
-        EnforcedLimits,
-        Engine,
-        EngineWeak,
-        ResumableCall,
-        ResumableCallHostTrap,
-        ResumableCallOutOfFuel,
-        StackLimits,
-        TypedResumableCall,
-        TypedResumableCallHostTrap,
-        TypedResumableCallOutOfFuel,
+        CompilationMode, Config, EnforcedLimits, Engine, EngineWeak, ResumableCall,
+        ResumableCallHostTrap, ResumableCallOutOfFuel, StackLimits, TypedResumableCall,
+        TypedResumableCallHostTrap, TypedResumableCallOutOfFuel,
     },
     error::Error,
     externref::ExternRef,
     func::{
-        Caller,
-        Func,
-        FuncRef,
-        FuncType,
-        IntoFunc,
-        TypedFunc,
-        WasmParams,
-        WasmResults,
-        WasmRet,
-        WasmTy,
-        WasmTyList,
+        Caller, Func, FuncRef, FuncType, IntoFunc, TypedFunc, WasmParams, WasmResults, WasmRet,
+        WasmTy, WasmTyList,
     },
     global::Global,
     instance::{Export, ExportsIter, Extern, ExternType, Instance},
@@ -169,15 +153,8 @@ pub use self::{
     linker::{state, Linker, LinkerBuilder},
     memory::{Memory, MemoryType, MemoryTypeBuilder},
     module::{
-        CustomSection,
-        CustomSectionsIter,
-        ExportType,
-        ImportType,
-        InstancePre,
-        Module,
-        ModuleExportsIter,
-        ModuleImportsIter,
-        Read,
+        CustomSection, CustomSectionsIter, ExportType, ImportType, InstancePre, Module,
+        ModuleExportsIter, ModuleImportsIter, Read,
     },
     store::{AsContext, AsContextMut, CallHook, Store, StoreContext, StoreContextMut},
     table::{Table, TableType},

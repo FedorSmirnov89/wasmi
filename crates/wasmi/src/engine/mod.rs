@@ -1,7 +1,7 @@
 //! The Wasmi interpreter.
 
 mod block_type;
-mod code_map;
+pub(crate) mod code_map;
 mod config;
 mod executor;
 mod func_types;
@@ -19,12 +19,8 @@ pub(crate) use self::{
     executor::Stack,
     func_types::DedupFuncType,
     translator::{
-        FuncTranslationDriver,
-        FuncTranslator,
-        FuncTranslatorAllocations,
-        LazyFuncTranslator,
-        ValidatingFuncTranslator,
-        WasmTranslator,
+        FuncTranslationDriver, FuncTranslator, FuncTranslatorAllocations, LazyFuncTranslator,
+        ValidatingFuncTranslator, WasmTranslator,
     },
 };
 use self::{
@@ -37,15 +33,9 @@ pub use self::{
     config::{CompilationMode, Config},
     limits::{EnforcedLimits, EnforcedLimitsError, StackLimits},
     resumable::{
-        ResumableCall,
-        ResumableCallHostTrap,
-        ResumableCallOutOfFuel,
-        ResumableError,
-        ResumableHostTrapError,
-        ResumableOutOfFuelError,
-        TypedResumableCall,
-        TypedResumableCallHostTrap,
-        TypedResumableCallOutOfFuel,
+        ResumableCall, ResumableCallHostTrap, ResumableCallOutOfFuel, ResumableError,
+        ResumableHostTrapError, ResumableOutOfFuelError, TypedResumableCall,
+        TypedResumableCallHostTrap, TypedResumableCallOutOfFuel,
     },
     traits::{CallParams, CallResults},
     translator::TranslationError,
@@ -54,10 +44,7 @@ use crate::{
     collections::arena::{ArenaIndex, GuardedEntity},
     func::FuncInOut,
     module::{FuncIdx, ModuleHeader},
-    Error,
-    Func,
-    FuncType,
-    StoreContextMut,
+    Error, Func, FuncType, StoreContextMut,
 };
 use alloc::{
     sync::{Arc, Weak},
@@ -113,7 +100,7 @@ type Guarded<Idx> = GuardedEntity<EngineIdx, Idx>;
 ///   Most of its API has a `&self` receiver, so can be shared easily.
 #[derive(Debug, Clone)]
 pub struct Engine {
-    inner: Arc<EngineInner>,
+    pub(crate) inner: Arc<EngineInner>,
 }
 
 /// A weak reference to an [`Engine`].
@@ -178,7 +165,7 @@ impl Engine {
     ///
     /// - If the deduplicated function type is not owned by the engine.
     /// - If the deduplicated function type cannot be resolved to its entity.
-    pub(super) fn resolve_func_type<F, R>(&self, func_type: &DedupFuncType, f: F) -> R
+    pub(crate) fn resolve_func_type<F, R>(&self, func_type: &DedupFuncType, f: F) -> R
     where
         F: FnOnce(&FuncType) -> R,
     {
@@ -422,6 +409,25 @@ impl Engine {
     pub(crate) fn recycle_stack(&self, stack: Stack) {
         self.inner.recycle_stack(stack)
     }
+
+    /// Returns all Wasmi IR instructions for the given EngineFunc.
+    pub(crate) fn get_instructions(
+        &self,
+        func: crate::engine::EngineFunc,
+    ) -> Result<&[crate::ir::Instruction], crate::Error> {
+        self.inner
+            .code_map
+            .get(None, func)
+            .map(|func_ref| func_ref.instrs())
+    }
+
+    /// Returns a reference to the compiled function data for the given EngineFunc.
+    pub(crate) fn get_compiled_func(
+        &self,
+        func: crate::engine::EngineFunc,
+    ) -> Result<crate::engine::code_map::CompiledFuncRef<'_>, crate::Error> {
+        self.inner.code_map.get(None, func)
+    }
 }
 
 /// The internal state of the Wasmi [`Engine`].
@@ -430,7 +436,7 @@ pub struct EngineInner {
     /// The [`Config`] of the engine.
     config: Config,
     /// Stores information about all compiled functions.
-    code_map: CodeMap,
+    pub(crate) code_map: CodeMap,
     /// Deduplicated function types.
     ///
     /// # Note
