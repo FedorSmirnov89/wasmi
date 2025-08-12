@@ -5,20 +5,8 @@ use crate::{
     },
     func::{FuncEntity, HostFuncEntity, HostFuncTrampolineEntity},
     module::{ImportName, ImportType},
-    AsContext,
-    AsContextMut,
-    Caller,
-    Engine,
-    Error,
-    Extern,
-    ExternType,
-    Func,
-    FuncType,
-    Instance,
-    InstancePre,
-    IntoFunc,
-    Module,
-    Val,
+    AsContext, AsContextMut, Caller, Engine, Error, Extern, ExternType, Func, FuncType, Instance,
+    InstancePre, IntoFunc, Module, Val,
 };
 use alloc::{
     collections::{btree_map::Entry, BTreeMap},
@@ -855,7 +843,7 @@ impl<T> LinkerInner<T> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "parser"))]
 mod tests {
     use super::*;
     use crate::{core::ValType, Store};

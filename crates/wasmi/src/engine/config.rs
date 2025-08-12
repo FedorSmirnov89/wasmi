@@ -1,5 +1,7 @@
 use super::{EnforcedLimits, StackLimits};
 use crate::core::FuelCostsProvider;
+
+#[cfg(feature = "parser")]
 use wasmparser::WasmFeatures;
 
 /// The default amount of stacks kept in the cache at most.
@@ -15,6 +17,7 @@ pub struct Config {
     /// The amount of Wasm stacks to keep in cache at most.
     cached_stacks: usize,
     /// The Wasm features used when validating or translating functions.
+    #[cfg(feature = "parser")]
     features: WasmFeatures,
     /// Is `true` if Wasmi executions shall consume fuel.
     consume_fuel: bool,
@@ -50,6 +53,7 @@ impl Default for Config {
         Self {
             stack_limits: StackLimits::default(),
             cached_stacks: DEFAULT_CACHED_STACKS,
+            #[cfg(feature = "parser")]
             features: Self::default_features(),
             consume_fuel: false,
             ignore_custom_sections: false,
@@ -60,6 +64,7 @@ impl Default for Config {
     }
 }
 
+#[cfg(feature = "parser")]
 impl Config {
     /// Returns the default [`WasmFeatures`].
     fn default_features() -> WasmFeatures {
@@ -81,32 +86,6 @@ impl Config {
         features.set(WasmFeatures::SIMD, cfg!(feature = "simd"));
         features.set(WasmFeatures::RELAXED_SIMD, cfg!(feature = "simd"));
         features
-    }
-
-    /// Sets the [`StackLimits`] for the [`Config`].
-    pub fn set_stack_limits(&mut self, stack_limits: StackLimits) -> &mut Self {
-        self.stack_limits = stack_limits;
-        self
-    }
-
-    /// Returns the [`StackLimits`] of the [`Config`].
-    pub(super) fn stack_limits(&self) -> StackLimits {
-        self.stack_limits
-    }
-
-    /// Sets the maximum amount of cached stacks for reuse for the [`Config`].
-    ///
-    /// # Note
-    ///
-    /// Defaults to 2.
-    pub fn set_cached_stacks(&mut self, amount: usize) -> &mut Self {
-        self.cached_stacks = amount;
-        self
-    }
-
-    /// Returns the maximum amount of cached stacks for reuse of the [`Config`].
-    pub(super) fn cached_stacks(&self) -> usize {
-        self.cached_stacks
     }
 
     /// Enable or disable the [`mutable-global`] Wasm proposal for the [`Config`].
@@ -284,6 +263,39 @@ impl Config {
         self
     }
 
+    /// Returns the [`WasmFeatures`] represented by the [`Config`].
+    pub(crate) fn wasm_features(&self) -> WasmFeatures {
+        self.features
+    }
+}
+
+impl Config {
+    /// Sets the [`StackLimits`] for the [`Config`].
+    pub fn set_stack_limits(&mut self, stack_limits: StackLimits) -> &mut Self {
+        self.stack_limits = stack_limits;
+        self
+    }
+
+    /// Returns the [`StackLimits`] of the [`Config`].
+    pub(super) fn stack_limits(&self) -> StackLimits {
+        self.stack_limits
+    }
+
+    /// Sets the maximum amount of cached stacks for reuse for the [`Config`].
+    ///
+    /// # Note
+    ///
+    /// Defaults to 2.
+    pub fn set_cached_stacks(&mut self, amount: usize) -> &mut Self {
+        self.cached_stacks = amount;
+        self
+    }
+
+    /// Returns the maximum amount of cached stacks for reuse of the [`Config`].
+    pub(super) fn cached_stacks(&self) -> usize {
+        self.cached_stacks
+    }
+
     /// Configures whether Wasmi will consume fuel during execution to either halt execution as desired.
     ///
     /// # Note
@@ -363,10 +375,5 @@ impl Config {
     /// [`Engine`]: crate::Engine
     pub(crate) fn get_enforced_limits(&self) -> &EnforcedLimits {
         &self.limits
-    }
-
-    /// Returns the [`WasmFeatures`] represented by the [`Config`].
-    pub(crate) fn wasm_features(&self) -> WasmFeatures {
-        self.features
     }
 }

@@ -279,9 +279,10 @@ macro_rules! include_wasm_blobs {
         $(
             $( #[$attr] )*
             pub fn $test_name() -> &'static str {
-                ::core::include_str!(
-                    ::core::concat!($test_folder, "/", $file_name, ".wast")
-                )
+                "not used"
+                // ::core::include_str!(
+                //     ::core::concat!($test_folder, "/", $file_name, ".wast")
+                // )
             }
         )*
     };

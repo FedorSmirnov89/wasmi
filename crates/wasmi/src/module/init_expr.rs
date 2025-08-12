@@ -14,6 +14,8 @@ use crate::{
 use alloc::boxed::Box;
 use core::fmt;
 use smallvec::SmallVec;
+
+#[cfg(feature = "parser")]
 use wasmparser::AbstractHeapType;
 
 #[cfg(feature = "simd")]
@@ -208,6 +210,7 @@ macro_rules! def_expr {
     }};
 }
 
+#[cfg(feature = "parser")]
 impl ConstExpr {
     /// Creates a new [`ConstExpr`] from the given Wasm [`ConstExpr`].
     ///
@@ -320,7 +323,9 @@ impl ConstExpr {
         );
         Self { op }
     }
+}
 
+impl ConstExpr {
     /// Create a new `ref.func x` [`ConstExpr`].
     ///
     /// # Note

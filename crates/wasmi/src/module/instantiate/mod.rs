@@ -1,7 +1,7 @@
 mod error;
 mod pre;
 
-#[cfg(test)]
+#[cfg(all(test, feature = "parser"))]
 mod tests;
 
 pub use self::{error::InstantiationError, pre::InstancePre};
@@ -12,20 +12,8 @@ use crate::{
     func::WasmFuncEntity,
     memory::DataSegment,
     value::WithType,
-    AsContext,
-    AsContextMut,
-    ElementSegment,
-    Error,
-    Extern,
-    ExternType,
-    FuncRef,
-    Global,
-    Instance,
-    InstanceEntity,
-    InstanceEntityBuilder,
-    Memory,
-    Table,
-    Val,
+    AsContext, AsContextMut, ElementSegment, Error, Extern, ExternType, FuncRef, Global, Instance,
+    InstanceEntity, InstanceEntityBuilder, Memory, Table, Val,
 };
 
 impl Module {
